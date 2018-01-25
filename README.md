@@ -25,3 +25,9 @@ Source code is available in the following github repositories:
 https://github.com/dekkerlab/cworld-dekker
 
 https://github.com/dekkerlab/cmapping
+
+
+## Primer Pool
+
+The set of primers used in the 5C experiments are provided in the file
+[PRIMERPOOL_6217_KelliherMyc.fa](https://github.com/dekkerlab/5C-CBFb-SMMHC-Inhib/blob/master/PRIMERPOOL_6217_KelliherMyc.fa)
