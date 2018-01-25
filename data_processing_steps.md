@@ -5,48 +5,45 @@ The following are the steps used to process the data in the paper and obtain the
 ## 1) Mapping 5C Fastqfiles:
 
 For 5C mapping, one needs to use novoalign instead of bowtie2. 
-On UMass cluster you can do this via 
+On UMass cluster this can be done as follows: 
 
-`load module load novocraft/V3.02.08`
+`load module novocraft/V3.02.08`
 
 Then run this script for mapping:
 
 `perl ~/cMapping/scripts/utilities/processFlowCell.pl -i /farline/umw_job_dekker/HPCC/tmp_cshare/solexa/19MAY17_C-Monster-A_HB/ -s /home/hb67w/farline/scratch  -o /farline/umw_job_dekker/HPCC/tmp_cshare/cData/ --gdir /farline/umw_job_dekker/HPCC/tmp_cshare/genome/ -f -g 6217-KelliherMyc`
 
-After you run the mapping and script request novocraft/3.02.00/novoalign for the aligner Path here is exact path
-alignerPath []: /home/bl73w/cMapping/alpha/aligners/novocraft/3.02.00/novoalign
-
-## 2)Combine5C : after mapping we use read-pairs:
+## 2)Combine5C:
 
 After mapping we use read-pairs
 
 `perl ~/cMapping/scripts/utilities/combine5C.pl -i /farline/umw_job_dekker/HPCC/tmp_cshare/cData/19MAY17_C-Monster-A_HB/ -s /home/hb67w/farline/scratch -o /farline/umw_job_dekker/HPCC/tmp_cshare/fiveCData/ --gdir /farline/umw_job_dekker/HPCC/cshare/genome/ -g 6217-KelliherMyc --short`
 
-## 4) Column2matrix :
+## 4) Column2matrix:
 
 After combine we get the file that contain 3 columns "Lucio5C-D1-HB-20-30-Combined__6217-KelliherMyc.gz" locusI" "locusJ" "interactions score"
    	
 `perl ~/cworld-dekker/scripts/perl/column2matrix.pl -i /farline/umw_job_dekker/HPCC/tmp_cshare/fiveCData/Lucio5C-D1-HB-20-30-Combined__6217-KelliherMyc.gz --oxh ReversePrimers.txt --oyh ForwardPrimers.txt -v`
    	
-(We provided our forward primers and reverse based on the number of the probe : so we will have the right sorted heatmap. If you don't provide the sorted probes you get the 4 heatmaps in 1 ( f-LR)(F-R)(LF-LR)(LF-R))
+In this particular case, we provided our forward and reverse primers based on the number of the probe. So we will have the right sorted heatmap. If you don't provide the sorted probes you get the 4 heatmaps in 1 ( f-LR)(F-R)(LF-LR)(LF-R)
 	
 ## 5)subsetMatrix_DiagonalRemova (Diagonal removal): 
 
-In order to removes LR & F that belong to the same fragment coming from self-circles:
+In order to remove LR & F that belong to the same fragment coming from self-circles, we run the subsetMatrix.pl script. 
 
 `perl ~/cworld-dekker/scripts/perl/subsetMatrix.pl -i Lucio5C-A1-HB-20-30-Combined__6217-KelliherMyc.binary.matrix.gz  --minDist 1 -v`
 
- (input -i is the output matrix we got from column2matrix)
+ Note that the input provided in the -i arguments is the output matrix we got from column2matrix in the previous step.
 	
 ## 6)Singleton removal:
 
-This is done by SingletonRemoval.pl
+This is done by the script SingletonRemoval.pl.
 
 `perl ~/cworld-dekker/scripts/perl/singletonRemoval.pl -i ~/5C/Lucio-Myc/subsetMatrix_DiagonalRemoval/Lucio5C-A1-HB-20-30-Combined__6217-KelliherMyc.score.subset.matrix.gz --ic --ca 0.02 --caf 2500 --cta 20 --ez  -v`
 
 ## 7)Singleton removal Using combine toRemove.txt of all libraries I need to compare:
 
-In the previous step we remove the singleton from each library  independently, but afterwards, we need to make sure that the combined toRemove.txt of all libraries we want to compare is used for singletons removal.
+In the previous step, we remove the singleton from each library independently. But afterwards, we need to make sure that the combined toRemove.txt of all libraries we want to compare is used for singletons removal.
 
 ## 8) Anchor removal : anchorPurge.pl This script detects and removes outlier row/cols.
 	
@@ -70,7 +67,7 @@ Since we are comparing four libraries, we scale the four libraries to 2600000 re
 
 ## 11) tab2hdf: 
 
-In order to balance our matrices we need the data in hdf5 format. The conversion is done as follows.
+In order to balance our matrices, we need the data in hdf5 format. The conversion is done as follows.
 
 `python ~/tab2hdf/scripts/tab2hdf.py -i Lucio5C-A1-HB-20-30-Combined__6217-KelliherMyc.score.subset.symmetrical.selfMerged.matrix.gz -v`
 		
@@ -80,7 +77,7 @@ In order to balance our matrices we need the data in hdf5 format. The conversion
 
 ## 13)hdf2tab: 
 
-Because binning script works on .matrix
+Note that the binning script works on .matrix files.
 
 `python ~/hdf2tab/scripts/hdf2tab.py -i Lucio5C-A1-HB-20-30-Combined__6217-KelliherMyc.score.subset.symmetrical.selfMerged.balanced.hdf5 -v`
 
