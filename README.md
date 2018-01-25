@@ -26,6 +26,11 @@ https://github.com/dekkerlab/cworld-dekker
 
 https://github.com/dekkerlab/cmapping
 
+https://github.com/dekkerlab/hdf2tab
+
+https://github.com/blajoie/tab2hdf
+
+https://github.com/dekkerlab/balance
 
 ## Primer Pool
 
